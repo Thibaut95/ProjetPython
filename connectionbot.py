@@ -5,7 +5,7 @@ import json
 import zlib
 
 import aiohttp
-from blackjack import *
+from Blackjack import *
 
 
 
@@ -95,7 +95,7 @@ async def start(ws):
                             task = asyncio.ensure_future(send_message(data['d']['author']['id'],
                                                                       reponse))
 
-                            if data['d']['content'] == 'quit' or reponse == 'Au revoir':
+                            if data['d']['content'] == 'quit':
                                 print('Bye bye!')
                                 await asyncio.wait([task])
                                 # On l'attend l'envoi du message ci-dessus.
