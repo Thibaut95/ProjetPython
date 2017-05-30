@@ -1,5 +1,3 @@
-"""Bot exemple qui répond à @greut."""
-
 import asyncio
 import json
 import zlib

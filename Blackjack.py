@@ -88,10 +88,10 @@ class Game:
                 return ""
         elif self.etape == 1:
             self.choixMise = int(texte)
-            if self.mise > 500:
+            if self.choixMise > 500:
                 return "Somme dépassant la limite de la table\n\nChoisissez votre mise (2-500 nombre pair)"
-            elif self.mise % 2 == 1:
-                self.mise -= 1
+            elif self.choixMise % 2 == 1:
+                self.choixMise -= 1
             if (self.somme - self.choixMise) >= 0:
                 self.somme -= self.choixMise
                 self.banque = [self.jeu_de_cartes.pop() for _ in range(1)]
@@ -194,6 +194,6 @@ class Game:
             self.compteur=1
             if self.somme <= 0:
                 self.etape = 0
-                return "Maintenant tu as tout perdu :-)"
+                return reponse + "Maintenant tu as tout perdu :-)"
             else:
                 return reponse + f"Somme actuelle : {self.somme}\n\nVoulez vous rejouer un tour? (oui/non)"
