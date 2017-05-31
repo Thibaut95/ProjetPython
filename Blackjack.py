@@ -21,12 +21,14 @@ def getValeur(cartes):
     return score
 
 def format_main(cartes):
-    return ", ".join(f"{carte.valeur}{carte.couleur}" for carte in cartes)
+    tab={'2': ':two:','3': ':three:','4': ':four:','5': ':five:','6': ':six:','7': ':seven:','8': ':eight:',
+         '9': ':nine:','10': ':ten:','J': ':regional_indicator_j:','Q': ':regional_indicator_q:','K': ':regional_indicator_k:','A': ':regional_indicator_a:'}
+    return ", ".join(f"{tab[str(carte.valeur)]}{carte.couleur}" for carte in cartes)
 
 
 def nouveauDeck(nombreJeu):
     valeurs = [n for n in range(2, 11)] + list('JQKA')
-    couleurs = '♠♣♡♢'
+    couleurs = [':spades:',':hearts:',':clubs:',':diamonds:']
 
     Carte = namedtuple('Carte', ['valeur', 'couleur'])
     Carte.__str__ = lambda self: "{self.valeur}{self.couleur}"
