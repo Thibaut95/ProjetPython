@@ -53,7 +53,7 @@ def getResultat(banque, joueur, jeuCarte):
 
         if scoreBanque == 21 and len(banque) == 2:
             resultat = "Egalité"
-    elif scoreJoueur < 21:
+    elif scoreJoueur <= 21:
         while scoreBanque < 17:
             banque.append(jeuCarte.pop())
             scoreBanque = getValeur(banque)
