@@ -63,7 +63,9 @@ async def identify(ws):
 async def start(ws):
     """Lance le bot sur l'adresse Web Socket donnée."""
 
-    mygame = Game()
+    """mygame = Game()"""
+    tabUser = []
+    tabGame={}
 
     global last_sequence  # global est nécessaire pour modifier la variable
     with aiohttp.ClientSession() as session:
@@ -86,18 +88,16 @@ async def start(ws):
                     last_sequence = data['s']
                     if data['t'] == "MESSAGE_CREATE":
                         print(data['d'])
-                        if data['d']['author']['username'] != 'Blackjack_Bot':
+                        user = data['d']['author']['username']
+                        if user != 'Blackjack_Bot':
+                            if user not in tabUser:
+                                tabGame[user] = Game()
+                                tabUser.append(user)
 
                             message = data['d']['content']
-                            reponse = mygame.etapeSuivante(message)
+                            reponse = tabGame[user].etapeSuivante(message)
                             task = asyncio.ensure_future(send_message(data['d']['author']['id'],
                                                                       reponse))
-
-                            if data['d']['content'] == 'quit':
-                                print('Bye bye!')
-                                await asyncio.wait([task])
-                                # On l'attend l'envoi du message ci-dessus.
-                                break
                     else:
                         print('Todo?', data['t'])
                 else:
