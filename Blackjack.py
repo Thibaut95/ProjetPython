@@ -22,7 +22,8 @@ def getValeur(cartes):
 
 def format_main(cartes):
     tab={'2': ':two:','3': ':three:','4': ':four:','5': ':five:','6': ':six:','7': ':seven:','8': ':eight:',
-         '9': ':nine:','10': ':ten:','J': ':regional_indicator_j:','Q': ':regional_indicator_q:','K': ':regional_indicator_k:','A': ':regional_indicator_a:'}
+         '9': ':nine:','10': ':keycap_ten:','J': ':regional_indicator_j:','Q': ':regional_indicator_q:',
+         'K': ':regional_indicator_k:','A': ':regional_indicator_a:'}
     return ", ".join(f"{tab[str(carte.valeur)]}{carte.couleur}" for carte in cartes)
 
 
@@ -127,7 +128,6 @@ class Game:
             else:
                 return "Somme insuffisante choisissez une autre mise (2-500 nombre pair)"
         elif self.etape == 2:
-            self.etape = 3
             if texte == "oui":
                 self.joueur[2] = [self.joueur[1].pop()]
                 self.etat[2] = True
@@ -135,6 +135,7 @@ class Game:
                 self.somme -= self.choixMise
             elif texte != "non":
                 return "Entrée incorrect"
+            self.etape = 3
             reponse = ""
             for key, value in self.joueur.items():
                 reponse += f"Joueur jeu{key} :\n     Mise : {self.mise[key]}\n     Main : {format_main(value)}\n"
@@ -196,7 +197,7 @@ class Game:
                     gain += self.mise[key] * 2.5
                 miseTotal += self.mise[key]
 
-            reponse += f"Banque : {format_main(self.banque)}\n\n"
+            reponse += f"Banque :\n Main: {format_main(self.banque)}\n\n"
             if gain - miseTotal >= 0:
                 reponse += f"Vous avez gagné {gain-miseTotal} jetons\n"
             else:
