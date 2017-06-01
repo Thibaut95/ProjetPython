@@ -100,6 +100,8 @@ class Game:
                 self.mise = {1: self.choixMise}
 
                 reponse = ""
+
+
                 if self.joueur[1][0].valeur == self.joueur[1][1].valeur:
                     if (self.somme - self.choixMise) >= 0:
                         reponse += f"Voulez-vous splitter? (oui/non)\n"
