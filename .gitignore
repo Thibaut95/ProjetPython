@@ -102,4 +102,6 @@ ENV/
 .mypy_cache/
 
 .idea/workspace.xml
-idea/
+.idea/
+
+__pycache__/

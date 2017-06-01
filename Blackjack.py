@@ -4,6 +4,7 @@ import re
 
 
 def getValeur(cartes):
+    """"Retourne la valeur du jeu passé en paramètre """
     score = 0
     nbAs = 0
     for carte in cartes:
@@ -13,7 +14,7 @@ def getValeur(cartes):
             nbAs += 1
         else:
             score += carte.valeur
-    for _ in range(nbAs):
+    for _ in range(nbAs):#La valeur des As sont ajoutés à la fin pour gérer s'ils valent 1 ou 11
         if score > 10:
             score += 1
         else:
@@ -21,6 +22,7 @@ def getValeur(cartes):
     return score
 
 def format_main(cartes):
+    """Un jeu est passé en paramètre  et il est mis en forme pour son affichage"""
     tab={'2': ':two:','3': ':three:','4': ':four:','5': ':five:','6': ':six:','7': ':seven:','8': ':eight:',
          '9': ':nine:','10': ':keycap_ten:','J': ':regional_indicator_j:','Q': ':regional_indicator_q:',
          'K': ':regional_indicator_k:','A': ':regional_indicator_a:'}
@@ -28,6 +30,7 @@ def format_main(cartes):
 
 
 def nouveauDeck(nombreJeu):
+    """Forme un nouveau sabot avec le nombres de jeux passé en paramètre"""
     valeurs = [n for n in range(2, 11)] + list('JQKA')
     couleurs = [':spades:',':hearts:',':clubs:',':diamonds:']
 
@@ -45,6 +48,7 @@ def nouveauDeck(nombreJeu):
 
 
 def getResultat(banque, joueur, jeuCarte):
+    """Donne le verdict en fonction d'un jeu et du résultat de la banque qui est gérée également"""
     scoreBanque = getValeur(banque)
     scoreJoueur = getValeur(joueur)
     resultat = "Perdu"
@@ -68,6 +72,7 @@ def getResultat(banque, joueur, jeuCarte):
     return resultat
 
 class Game:
+    """Classe gérant le déroulement du jeu"""
     def __init__(self):
         self.jeu_de_cartes = []
         self.choixMise = 0
@@ -80,7 +85,8 @@ class Game:
         self.compteur = 1
 
     def etapeSuivante(self, texte):
-        if self.etape == 0:
+        """Sorte de machine d'état qui gère les étapes du jeu"""
+        if self.etape == 0:#Initialisation du jeu
             if texte == 'start game':
                 self.jeu_de_cartes = nouveauDeck(6)
                 self.somme = 100
@@ -88,7 +94,7 @@ class Game:
                 return f"Somme de départ : {self.somme}\n\nChoisissez votre mise (2-500 nombre pair)"
             else:
                 return "Pour commencer une partie de Blackjack taper 'start game'"
-        elif self.etape == 1:
+        elif self.etape == 1:#Choix de la mise et distribution des cartes
             expression = r"^[1-9][0-9]*$"
             if re.search(expression, texte):
                 self.choixMise = int(texte)
@@ -129,7 +135,7 @@ class Game:
                                                                   f"     Main : {format_main(self.joueur[1])}\n" + reponse
             else:
                 return "Somme insuffisante choisissez une autre mise (2-500 nombre pair)"
-        elif self.etape == 2:
+        elif self.etape == 2:#Gestion du split
             if texte == "oui":
                 self.joueur[2] = [self.joueur[1].pop()]
                 self.etat[2] = True
@@ -143,7 +149,7 @@ class Game:
                 reponse += f"Joueur jeu{key} :\n     Mise : {self.mise[key]}\n     Main : {format_main(value)}\n"
 
             return reponse + f'Que voulez-vous faire pour le jeu 1? (tirer, rester, doubler)'
-        elif self.etape == 3:
+        elif self.etape == 3:#Gestion des choix du joueur
             if self.etat[self.compteur]:
                 if getValeur(self.joueur[self.compteur]) > 20:
                     self.etat[self.compteur] = False
@@ -174,7 +180,7 @@ class Game:
                         return reponse + f"Que voulez-vous faire pour le jeu {self.compteur}? (tirer,rester,doubler) "
             else:
                 self.etape=4
-        elif self.etape==5:
+        elif self.etape==5:#Choix de la mise pour le tour suivant
             if texte == "oui":
                 self.etape = 1
                 return f"Choisissez votre mise (2-500 nombre pair) "
@@ -184,7 +190,7 @@ class Game:
             else:
                 return "Entrée incorrect"
         reponse = ""
-        if self.etape==4:
+        if self.etape==4:#Gestion des résultats 
             reponse += "\nResultat du tour : \n"
             gain = 0
             miseTotal = 0
@@ -212,4 +218,6 @@ class Game:
                 self.etape = 0
                 return reponse + "Vous n'avez plus assez de jeton\n\nAu revoir"
             else:
+                if len(self.jeu_de_cartes) < 52:
+                    self.jeu_de_cartes = nouveauDeck(6)
                 return reponse + f"Somme actuelle : {self.somme}\n\nVoulez vous rejouer un tour? (oui/non)"
