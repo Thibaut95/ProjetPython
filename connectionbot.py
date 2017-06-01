@@ -1,14 +1,16 @@
 import asyncio
 import json
 import zlib
+import json
 
 import aiohttp
 from Blackjack import *
 
+json_data=open('token.json')
+data = json.load(json_data)
 
-
-
-TOKEN = "MzE0Njk2NTY1NDk3Mzk3MjQ4.DAHhow.ttmtO61boR-DrZmkBXEPdTPBRnA"
+TOKEN=data["TOKEN"]
+json_data.close()
 
 URL = "https://discordapp.com/api"
 HEADERS = {
@@ -63,7 +65,6 @@ async def identify(ws):
 async def start(ws):
     """Lance le bot sur l'adresse Web Socket donnée."""
 
-    """mygame = Game()"""
     tabUser = []
     tabGame={}
 
