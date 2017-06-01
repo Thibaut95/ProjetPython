@@ -1,12 +1,12 @@
 import asyncio
 import json
 import zlib
-import json
 
 import aiohttp
-from Blackjack import *
 
-json_data=open('token.json')
+from Blackjack.blackjack import *
+
+json_data=open('Blackjack/token.json')
 data = json.load(json_data)
 
 TOKEN=data["TOKEN"]
@@ -109,5 +109,6 @@ async def main():
     response = await api_call('/gateway')
     response = response
     await start(response['url'])
+
 
 
