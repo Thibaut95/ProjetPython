@@ -1,5 +1,6 @@
 from collections import namedtuple
 from random import shuffle
+import re
 
 
 def getValeur(cartes):
@@ -20,12 +21,15 @@ def getValeur(cartes):
     return score
 
 def format_main(cartes):
-    return ", ".join(f"{carte.valeur}{carte.couleur}" for carte in cartes)
+    tab={'2': ':two:','3': ':three:','4': ':four:','5': ':five:','6': ':six:','7': ':seven:','8': ':eight:',
+         '9': ':nine:','10': ':keycap_ten:','J': ':regional_indicator_j:','Q': ':regional_indicator_q:',
+         'K': ':regional_indicator_k:','A': ':regional_indicator_a:'}
+    return ", ".join(f"{tab[str(carte.valeur)]}{carte.couleur}" for carte in cartes)
 
 
 def nouveauDeck(nombreJeu):
     valeurs = [n for n in range(2, 11)] + list('JQKA')
-    couleurs = '♠♣♡♢'
+    couleurs = [':spades:',':hearts:',':clubs:',':diamonds:']
 
     Carte = namedtuple('Carte', ['valeur', 'couleur'])
     Carte.__str__ = lambda self: "{self.valeur}{self.couleur}"
@@ -52,7 +56,7 @@ def getResultat(banque, joueur, jeuCarte):
 
         if scoreBanque == 21 and len(banque) == 2:
             resultat = "Egalité"
-    elif scoreJoueur < 21:
+    elif scoreJoueur <= 21:
         while scoreBanque < 17:
             banque.append(jeuCarte.pop())
             scoreBanque = getValeur(banque)
@@ -76,20 +80,24 @@ class Game:
         self.compteur = 1
 
     def etapeSuivante(self, texte):
-        if texte == 'quit':
-            return "quitter"
-        elif self.etape == 0:
-            if texte == 'start game' and self.etape == 0:
+        if self.etape == 0:
+            if texte == 'start game':
                 self.jeu_de_cartes = nouveauDeck(6)
                 self.somme = 100
                 self.etape = 1
                 return f"Somme de départ : {self.somme}\n\nChoisissez votre mise (2-500 nombre pair)"
             else:
-                return ""
+                return "Pour commencer une partie de Blackjack taper 'start game'"
         elif self.etape == 1:
-            self.choixMise = int(texte)
+            expression = r"^[1-9][0-9]*$"
+            if re.search(expression, texte):
+                self.choixMise = int(texte)
+            else:
+                return "Entrée incorrect\n\nChoisissez votre mise (2-500 nombre pair)"
             if self.choixMise > 500:
                 return "Somme dépassant la limite de la table\n\nChoisissez votre mise (2-500 nombre pair)"
+            elif self.choixMise < 2:
+                return "La mise minimum est de 2 jeton\n\nChoisissez votre mise (2-500 nombre pair)"
             elif self.choixMise % 2 == 1:
                 self.choixMise -= 1
             if (self.somme - self.choixMise) >= 0:
@@ -122,12 +130,14 @@ class Game:
             else:
                 return "Somme insuffisante choisissez une autre mise (2-500 nombre pair)"
         elif self.etape == 2:
-            self.etape = 3
             if texte == "oui":
                 self.joueur[2] = [self.joueur[1].pop()]
                 self.etat[2] = True
                 self.mise[2] = self.choixMise
                 self.somme -= self.choixMise
+            elif texte != "non":
+                return "Entrée incorrect"
+            self.etape = 3
             reponse = ""
             for key, value in self.joueur.items():
                 reponse += f"Joueur jeu{key} :\n     Mise : {self.mise[key]}\n     Main : {format_main(value)}\n"
@@ -139,7 +149,7 @@ class Game:
                     self.etat[self.compteur] = False
                 elif texte == "rester":
                     self.etat[self.compteur] = False
-                else:
+                elif texte == "doubler" or texte == "tirer":
                     self.joueur[self.compteur].append(self.jeu_de_cartes.pop())
                     if texte == "doubler":
                         if (self.somme - self.choixMise) >= 0:
@@ -150,6 +160,8 @@ class Game:
                             return f"Somme insuffisante pour doubler\n"
                     if getValeur(self.joueur[self.compteur]) > 21:
                         self.etat[self.compteur] = False
+                else:
+                    return "Entrée incorrect"
             reponse = ""
             for key, value in self.joueur.items():
                 reponse += f"Joueur jeu{key} :\n     Mise : {self.mise[key]}\n     Main : {format_main(value)}\n"
@@ -166,9 +178,11 @@ class Game:
             if texte == "oui":
                 self.etape = 1
                 return f"Choisissez votre mise (2-500 nombre pair) "
-            else:
+            elif texte == "non":
                 self.etape = 0
                 return 'Au revoir'
+            else:
+                return "Entrée incorrect"
         reponse = ""
         if self.etape==4:
             reponse += "\nResultat du tour : \n"
@@ -185,7 +199,7 @@ class Game:
                     gain += self.mise[key] * 2.5
                 miseTotal += self.mise[key]
 
-            reponse += f"Banque : {format_main(self.banque)}\n\n"
+            reponse += f"Banque :\n Main: {format_main(self.banque)}\n\n"
             if gain - miseTotal >= 0:
                 reponse += f"Vous avez gagné {gain-miseTotal} jetons\n"
             else:
@@ -194,8 +208,8 @@ class Game:
             self.etape = 5
             self.somme += gain
             self.compteur=1
-            if self.somme <= 0:
+            if self.somme < 2:
                 self.etape = 0
-                return reponse + "Maintenant tu as tout perdu :-)"
+                return reponse + "Vous n'avez plus assez de jeton\n\nAu revoir"
             else:
                 return reponse + f"Somme actuelle : {self.somme}\n\nVoulez vous rejouer un tour? (oui/non)"
