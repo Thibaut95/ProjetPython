@@ -190,7 +190,7 @@ class Game:
             else:
                 return "Entrée incorrect"
         reponse = ""
-        if self.etape==4:#Gestion des résultats 
+        if self.etape==4:#Gestion des résultats
             reponse += "\nResultat du tour : \n"
             gain = 0
             miseTotal = 0
