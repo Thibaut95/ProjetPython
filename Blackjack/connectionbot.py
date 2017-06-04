@@ -6,7 +6,7 @@ import aiohttp
 
 from Blackjack.blackjack import *
 
-json_data=open('token.json')
+json_data=open('Blackjack/token.json')
 data = json.load(json_data)
 
 TOKEN=data["TOKEN"]

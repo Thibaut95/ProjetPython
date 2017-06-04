@@ -105,3 +105,4 @@ ENV/
 .idea/
 
 __pycache__/
+token.json
