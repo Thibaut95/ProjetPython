@@ -111,9 +111,4 @@ async def main():
     await start(response['url'])
 
 
-if __name__ == "__main__":
-    # Lancer le programme.
-    loop = asyncio.get_event_loop()
-    loop.set_debug(True)
-    loop.run_until_complete(main())
-    loop.close()
+
